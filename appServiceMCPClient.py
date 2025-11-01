@@ -7,7 +7,7 @@ import urllib.request
 # Configuration: prefer env var but keep the default used previously
 AZURE_APP_SERVICE_URL = os.environ.get(
     "AZURE_APP_SERVICE_URL",
-    "https://archgenmcpserver-c0hycpg7ddebcqdf.centralus-01.azurewebsites.net/mcp/",
+    "https://archgenmcpserver-c0hycpg7ddebcqdf.centralus-01.azurewebsites.net/mcp",
 )
 
 DEFAULT_PROMPT = (
@@ -17,48 +17,9 @@ DEFAULT_PROMPT = (
 
 
 async def call_generate_architecture(prompt: str):
-    """Call the remote MCP tool 'generate_architecture'.
-
-    Implementation details:
-    - Try to use the `fastmcp` client if it's installed (preferred).
-    - Fallback to a plain HTTP POST (JSON-RPC style) using the standard
-      library if `fastmcp` isn't available or fails.
-
-    This keeps the client usable in environments where `fastmcp` is not
-    installed (e.g., CI) while still supporting the streaming client when
-    available.
-    """
-
+    """Call the remote MCP tool 'generate_architecture' via HTTP POST only."""
     print(f"Connecting to MCP server at: {AZURE_APP_SERVICE_URL}")
-
-    # First attempt: use fastmcp (if available)
     try:
-        from fastmcp import Client  # type: ignore
-        from fastmcp.client.transports import StreamableHttpTransport  # type: ignore
-
-        client = Client(StreamableHttpTransport(AZURE_APP_SERVICE_URL))
-        params = {"prompt": prompt}
-        print(f"Calling tool 'generate_architecture' with params: {params}")
-
-        resp = await client.tools.generate_architecture(**params)
-
-        # Handle streaming vs single response
-        if hasattr(resp, "__aiter__"):
-            print("Streaming response:")
-            async for part in resp:
-                print(part)
-        else:
-            print("Generate Architecture Response:")
-            print(resp)
-
-        return
-    except Exception as e:  # fastmcp not available or call failed
-        print("fastmcp client not usable or call failed, falling back to HTTP POST.")
-        print("fastmcp error:", e)
-
-    # Fallback: plain HTTP POST (JSON-RPC style). Use urllib to avoid new deps.
-    try:
-        
         rpc_req = {
             "id": 1,
             "type": "request",
@@ -90,7 +51,7 @@ async def call_generate_architecture(prompt: str):
                 print("Response:")
                 print(j)
     except Exception as e:
-        print("HTTP fallback failed:", e)
+        print("HTTP POST failed:", e)
 
 
 if __name__ == "__main__":
