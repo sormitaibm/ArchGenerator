@@ -36,6 +36,7 @@ def main():
     }
     print("Generate Architecture Request:", req)
     try:
+        #this is for local
         host = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
         port = int(sys.argv[2]) if len(sys.argv) > 2 else 5000
         resp = send_request(host, port, req)

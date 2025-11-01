@@ -1,5 +1,4 @@
-# config.py
-# Store Azure OpenAI credentials and settings here
+
 import os
 
 API_KEY = os.environ.get("AZURE_OPENAI_API_KEY", "")
