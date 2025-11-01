@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Sample FAST MCP-style Python Program
 
 This repository contains a minimal example of a "Model Context Protocol" program using the FAST MCP protocol (binary, length-prefixed JSON) in Python.
@@ -80,4 +80,4 @@ Notes:
 =======
 # ArchGenerator
 This is an MCP server which will generator azure architecture from English prompt
->>>>>>> 2e82b7a8563d6841280fc7e6167443010b06327e
+
