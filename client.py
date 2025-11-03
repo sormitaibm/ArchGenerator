@@ -6,6 +6,7 @@ import json
 import sys
 import urllib.request
 import urllib.parse
+import argparse
 
 def send_http_request(url: str, req: dict) -> dict:
     """Send request to FastMCP web server via HTTP."""
@@ -87,17 +88,18 @@ def test_fastmcp_tools(base_url: str = "http://localhost:8000"):
 def main():
     """Main function to test FastMCP tools."""
     
-    # Default to local web server
-    base_url = "http://localhost:8000"
+    parser = argparse.ArgumentParser(description='Test FastMCP server')
+    parser.add_argument('--url', default='http://localhost:8000', 
+                        help='Base URL of the server to test')
+    parser.add_argument('--mode', choices=['mcp', 'web'], default='web',
+                        help='Server mode: mcp for native FastMCP HTTP, web for web wrapper')
     
-    # Allow override via command line
-    if len(sys.argv) > 1:
-        base_url = sys.argv[1]
+    args = parser.parse_args()
     
-    print(f"Testing FastMCP server at: {base_url}")
+    print(f"Testing FastMCP server at: {args.url} (mode: {args.mode})")
     
     # Run all tool tests
-    responses = test_fastmcp_tools(base_url)
+    responses = test_fastmcp_tools(args.url)
     
     # Test architecture generation (requires Azure OpenAI credentials)
     print(f"\n5. Testing Architecture Generation:")
@@ -112,7 +114,7 @@ def main():
     
     print(f"   Request: {arch_req}")
     try:
-        mcp_url = f"{base_url}/mcp"
+        mcp_url = f"{args.url}/mcp"
         arch_resp = send_http_request(mcp_url, arch_req)
         print(f"   Response: {arch_resp}")
         
