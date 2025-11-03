@@ -3,12 +3,17 @@ import os
 import asyncio
 import json
 import urllib.request
+import argparse
 
 # Configuration: prefer env var but keep the default used previously
 AZURE_APP_SERVICE_URL = os.environ.get(
     "AZURE_APP_SERVICE_URL",
-    "https://archgenmcpserver-c0hycpg7ddebcqdf.centralus-01.azurewebsites.net/mcp",
+    "https://archgenmcpserver-c0hycpg7ddebcqdf.centralus-01.azurewebsites.net",
 )
+
+# Default endpoints for different server modes
+MCP_WEB_ENDPOINT = f"{AZURE_APP_SERVICE_URL}/mcp"
+MCP_HTTP_ENDPOINT = f"{AZURE_APP_SERVICE_URL}/call"
 
 DEFAULT_PROMPT = (
     "Design a scalable web application on Azure with a load balancer, "

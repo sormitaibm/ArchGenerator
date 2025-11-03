@@ -6,6 +6,7 @@ FastMCP server for architecture generation with GitHub Copilot agent integration
 
 import datetime
 import sys
+import argparse
 try:
     import openai
 except ImportError:
@@ -83,5 +84,19 @@ def get_current_time() -> dict:
     return {"time": datetime.datetime.utcnow().isoformat() + "Z"}
 
 if __name__ == "__main__":
-    # Run the FastMCP server
-    mcp.run()
+    parser = argparse.ArgumentParser(description='FastMCP Architecture Generator Server')
+    parser.add_argument('--mode', choices=['stdio', 'http'], default='stdio',
+                        help='Server mode: stdio for GitHub Copilot, http for remote access')
+    parser.add_argument('--host', default='0.0.0.0', help='HTTP host (default: 0.0.0.0)')
+    parser.add_argument('--port', type=int, default=8000, help='HTTP port (default: 8000)')
+    
+    args = parser.parse_args()
+    
+    if args.mode == 'http':
+        # Run in HTTP mode for remote connectivity
+        print(f"Starting MCP server in HTTP mode on {args.host}:{args.port}")
+        mcp.run(transport="http", host=args.host, port=args.port)
+    else:
+        # Run in STDIO mode for GitHub Copilot
+        print("Starting MCP server in STDIO mode for GitHub Copilot", file=sys.stderr)
+        mcp.run()

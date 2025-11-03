@@ -3,6 +3,12 @@ from fastapi.responses import JSONResponse
 import traceback
 import asyncio
 import datetime
+import sys
+import os
+
+# Add current directory to Python path
+sys.path.insert(0, os.path.dirname(__file__))
+
 try:
     import openai
 except ImportError:
@@ -13,7 +19,11 @@ try:
 except ImportError:
     config = None
 
-app = FastAPI()
+# Import the MCP instance from mcp_server
+from mcp_server import mcp
+
+app = FastAPI(title="MCP Architecture Generator Web API", 
+              description="HTTP wrapper for MCP tools")
 
 # FastMCP-style tool implementations (direct functions for web API)
 def echo(message: str) -> dict:
