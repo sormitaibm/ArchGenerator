@@ -83,6 +83,16 @@ def get_current_time() -> dict:
     """Get the current UTC time in ISO format."""
     return {"time": datetime.datetime.utcnow().isoformat() + "Z"}
 
+@mcp.tool()
+def initialize() -> dict:
+    """Initialize the MCP server session."""
+    return {
+        "status": "initialized",
+        "server": "Architecture Generator",
+        "version": "1.0.0",
+        "tools": ["echo", "add", "subtract", "generate_architecture", "get_current_time", "initialize"]
+    }
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='FastMCP Architecture Generator Server')
     parser.add_argument('--mode', choices=['stdio', 'http'], default='stdio',
