@@ -82,6 +82,15 @@ def get_current_time() -> dict:
     """Get the current UTC time in ISO format."""
     return {"time": datetime.datetime.utcnow().isoformat() + "Z"}
 
+def initialize() -> dict:
+    """Initialize the MCP server session."""
+    return {
+        "status": "initialized",
+        "server": "Architecture Generator Web API",
+        "version": "1.0.0",
+        "tools": ["echo", "add", "subtract", "generate_architecture", "get_current_time", "initialize"]
+    }
+
 # Tool dispatch mapping
 TOOLS = {
     "echo": echo,
@@ -89,7 +98,8 @@ TOOLS = {
     "subtract": subtract,
     "generate_architecture": generate_architecture,
     "time": get_current_time,
-    "get_current_time": get_current_time
+    "get_current_time": get_current_time,
+    "initialize": initialize
 }
 
 def handle_tool_call(method: str, params: dict) -> dict:
@@ -106,7 +116,7 @@ def handle_tool_call(method: str, params: dict) -> dict:
         return tool_func(params.get("a", 0), params.get("b", 0))
     elif method == "generate_architecture":
         return tool_func(params.get("prompt", ""))
-    elif method in ["time", "get_current_time"]:
+    elif method in ["time", "get_current_time", "initialize"]:
         return tool_func()
     else:
         raise ValueError(f"Tool {method} not configured")
@@ -140,6 +150,10 @@ async def subtract_endpoint(request: Request):
 @app.get("/time")
 async def time_endpoint():
     return get_current_time()
+
+@app.get("/initialize")
+async def initialize_endpoint():
+    return initialize()
 
 @app.post("/generate_architecture")
 async def generate_architecture_endpoint(request: Request):
