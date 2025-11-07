@@ -1,6 +1,9 @@
+from logging import config
 import os
 import sys
 import logging
+
+import openai
 
 # Configure logging for App Service
 logging.basicConfig(
@@ -54,6 +57,47 @@ def add(a: float, b: float) -> dict:
 def subtract(a: float, b: float) -> dict:
     """Subtract two numbers and return the difference."""
     return {"difference": a - b}
+
+@mcp.tool()
+def generate_architecture(prompt: str) -> dict:
+    """Generate Azure architecture diagram in Mermaid JS notation."""
+    if not prompt:
+        raise ValueError("Missing prompt for architecture generation")
+    if openai is None:
+        raise ImportError("openai package not installed")
+    
+    # Azure OpenAI config: get from config.py
+    api_key = getattr(config, "API_KEY", None)
+    endpoint = getattr(config, "API_BASE", None)
+    api_version = getattr(config, "API_VERSION", "2023-05-15")
+    deployment = getattr(config, "DEPLOYMENT", None)
+    
+    if not api_key or not endpoint or not deployment:
+        raise ValueError("Azure OpenAI credentials not set in config.py")
+    
+    openai.api_type = "azure"
+    openai.api_key = api_key
+    openai.api_base = endpoint
+    openai.api_version = api_version
+    
+    # Compose the prompt for Mermaid JS diagram
+    system_prompt = "You are an expert Azure architect. Given a user prompt, generate an Azure architecture diagram in Mermaid JS notation. Only output the diagram code."
+    user_prompt = prompt
+    
+    try:
+        response = openai.ChatCompletion.create(
+            engine=deployment,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            temperature=0.2,
+            max_tokens=800
+        )
+        mermaid_code = response["choices"][0]["message"]["content"]
+        return {"mermaid": mermaid_code}
+    except Exception as e:
+        raise ValueError(f"Azure OpenAI error: {e}")
 
 if __name__ == "__main__":
     try:
