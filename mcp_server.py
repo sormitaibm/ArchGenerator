@@ -1,9 +1,10 @@
-from logging import config
+from logging import config as logging_config
 import os
 import sys
 import logging
 
 import openai
+import config
 
 # Configure logging for App Service
 logging.basicConfig(
@@ -22,11 +23,9 @@ try:
     # Import dependencies step by step for better error tracking
     logger.info("Importing typing_extensions...")
     import typing_extensions
-    logger.info(f"typing_extensions {typing_extensions.__version__} loaded from {typing_extensions.__file__}")
     
     logger.info("Importing pydantic...")
     import pydantic
-    logger.info(f"pydantic {pydantic.__version__} loaded successfully")
     
     logger.info("Importing FastMCP...")
     from fastmcp import FastMCP
